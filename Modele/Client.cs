@@ -1,4 +1,4 @@
-﻿namespace Client
+﻿namespace Modele
 {
     public class Client
     {

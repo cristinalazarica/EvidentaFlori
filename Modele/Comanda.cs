@@ -1,4 +1,4 @@
-﻿namespace Comanda
+﻿namespace Modele
 {
     public class Comanda
     {
