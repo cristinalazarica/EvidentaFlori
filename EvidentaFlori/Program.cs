@@ -8,8 +8,9 @@ namespace EvidentaFlori
     {
         static void Main(string[] args)
         {
-            AdministrareFlori adminFlori = new AdministrareFlori();
-
+            AdministrareFlori adminFlori = new AdministrareFlori("flori.txt");
+            AdministrareClienti adminClienti = new AdministrareClienti("clienti.txt");
+            AdministrareComenzi adminComenzi = new AdministrareComenzi("comenzi.txt");
             Modele.Floare? floareNoua = null;
             Modele.Client? clientNou = null;
             Modele.Comanda? comandaNoua = null;
@@ -21,13 +22,23 @@ namespace EvidentaFlori
                 Console.WriteLine("\n--- Meniu Evidenta Flori ---");
                 Console.WriteLine("1. Citire floare de la tastatura");
                 Console.WriteLine("2. Afisarea ultimei flori introduse");
-                Console.WriteLine("3. Salvare floare in lista");
+                Console.WriteLine("3. Salvare floare in fisier");
                 Console.WriteLine("4. Afisare lista de flori");
                 Console.WriteLine("5. Citire client de la tastatura");
                 Console.WriteLine("6. Afisare client salvat");
                 Console.WriteLine("7. Citire comanda de la tastatura");
                 Console.WriteLine("8. Afisare lista comenzi");
                 Console.WriteLine("9. Cautare floare dupa nume");
+                /*Console.Write("10. Introduceti numele clientului: ");
+                string numeClient = Console.ReadLine() ?? "";
+
+                var clientGasit = adminClienti.CautaDupaNume(numeClient);
+
+                if (clientGasit != null)
+                    Console.WriteLine(clientGasit.Info());
+                else
+                    Console.WriteLine("Clientul nu a fost gasit.");
+                break;*/
                 Console.WriteLine("0. Inchidere program");
 
                 Console.Write("\nAlegeti o optiune: ");
@@ -61,21 +72,30 @@ namespace EvidentaFlori
 
                     case "5":
                         clientNou = CitireClient();
+                        adminClienti.AdaugaClient(clientNou);
                         Console.WriteLine("Client salvat.");
                         break;
 
                     case "6":
-                        AfisareClient(clientNou);
+                        AfisareClienti(adminClienti.GetClienti());
                         break;
 
                     case "7":
                         comandaNoua = CitireComanda();
+                        adminComenzi.AdaugaComanda(comandaNoua);
                         Console.WriteLine("Comanda salvata.");
+                        
                         break;
 
                     case "8":
-                        Console.WriteLine("Comenzile sunt doar afisate local.");
+                        var comenzi = adminComenzi.GetComenzi();
+                        if (comenzi.Count == 0)
+                            Console.WriteLine("Nu exista comenzi.");
+                        else
+                            foreach (var c in comenzi)
+                                Console.WriteLine(c.Info());
                         break;
+
 
                     case "9":
                         Console.Write("Introduceti numele florii: ");
@@ -169,12 +189,13 @@ namespace EvidentaFlori
                     Console.WriteLine(f.Info());
         }
 
-        static void AfisareClient(Modele.Client? c)
+        static void AfisareClienti(List<Modele.Client> clienti)
         {
-            if (c == null)
-                Console.WriteLine("Nu exista client.");
+            if (clienti.Count == 0)
+                Console.WriteLine("Nu exista clienti.");
             else
-                Console.WriteLine(c.Info());
+                foreach (var c in clienti)
+                    Console.WriteLine(c.Info());
         }
     }
 }

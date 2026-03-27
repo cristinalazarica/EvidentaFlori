@@ -20,6 +20,19 @@
             Cantitate = cantitate;
         }
 
+        public Comanda(string linieFisier)
+        {
+            string[] date = linieFisier.Split(';');
+            NumeClient = date[0];
+            NumeFloare = date[1];
+            Cantitate = int.Parse(date[2]);
+        }
+
+        public string ConversieLaSirPentruFisier()
+        {
+            return $"{NumeClient};{NumeFloare};{Cantitate}";
+        }
+
         public string Info()
         {
             return $"Client: {NumeClient}, Floare: {NumeFloare}, Cantitate: {Cantitate}";

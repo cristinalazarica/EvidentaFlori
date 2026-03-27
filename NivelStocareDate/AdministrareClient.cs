@@ -6,11 +6,11 @@ using Modele;
 
 namespace NivelStocareDate
 {
-    public class AdministrareFlori
+    public class AdministrareClienti
     {
         private string numeFisier;
 
-        public AdministrareFlori(string numeFisier)
+        public AdministrareClienti(string numeFisier)
         {
             this.numeFisier = numeFisier;
 
@@ -20,47 +20,46 @@ namespace NivelStocareDate
             }
         }
 
-        public void AdaugaFloare(Floare floare)
+        public void AdaugaClient(Client client)
         {
             using (StreamWriter sw = new StreamWriter(numeFisier, true))
             {
-                sw.WriteLine(floare.ConversieLaSirPentruFisier());
+                sw.WriteLine(client.ConversieLaSirPentruFisier());
             }
         }
 
-        public List<Floare> GetFlori()
+        public List<Client> GetClienti()
         {
-            List<Floare> flori = new List<Floare>();
+            List<Client> clienti = new List<Client>();
 
             using (StreamReader sr = new StreamReader(numeFisier))
             {
                 string linieFisier;
-
                 while ((linieFisier = sr.ReadLine()) != null)
                 {
-                    Floare floare = new Floare(linieFisier);
-                    flori.Add(floare);
+                    Client client = new Client(linieFisier);
+                    clienti.Add(client);
                 }
             }
 
-            return flori;
+            return clienti;
         }
 
-        public Floare?  CautaDupaNume(string nume)
+        public Client? CautaDupaNume(string nume)
         {
-            return GetFlori().FirstOrDefault(f => f.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase));
+            return GetClienti().FirstOrDefault(c => c.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase));
         }
 
-        public bool ModificaFloare(string numeCautat, Floare floareNoua)
+        public bool ModificaClient(string numeCautat, Client clientNou)
         {
-            List<Floare> flori = GetFlori();
+            List<Client> clienti = GetClienti();
             bool gasit = false;
 
-            for (int i = 0; i < flori.Count; i++)
+            for (int i = 0; i < clienti.Count; i++)
             {
-                if (flori[i].Nume.Equals(numeCautat, StringComparison.OrdinalIgnoreCase))
+                if (clienti[i].Nume.Equals(numeCautat, StringComparison.OrdinalIgnoreCase))
                 {
-                    flori[i] = floareNoua;
+                    clienti[i] = clientNou;
                     gasit = true;
                     break;
                 }
@@ -70,9 +69,9 @@ namespace NivelStocareDate
             {
                 using (StreamWriter sw = new StreamWriter(numeFisier, false))
                 {
-                    foreach (Floare f in flori)
+                    foreach (Client c in clienti)
                     {
-                        sw.WriteLine(f.ConversieLaSirPentruFisier());
+                        sw.WriteLine(c.ConversieLaSirPentruFisier());
                     }
                 }
             }

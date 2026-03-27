@@ -43,7 +43,20 @@
             Culoare = culoare;
             Optiuni = optiuni;
         }
+        public Floare(string linieFisier)
+        {
+            string[] date = linieFisier.Split(';');
 
+            Nume = date[0];
+            Pret = double.Parse(date[1]);
+            Stoc = int.Parse(date[2]);
+            Culoare = (Culoare)int.Parse(date[3]);
+            Optiuni = (Optiuni)int.Parse(date[4]);
+        }
+        public string ConversieLaSirPentruFisier()
+        {
+            return $"{Nume};{Pret};{Stoc};{(int)Culoare};{(int)Optiuni}";
+        }
         public string Info()
         {
             return $"Floare: {Nume}, Pret: {Pret}, Stoc: {Stoc}, Culoare: {Culoare}, Optiuni: {Optiuni}";
