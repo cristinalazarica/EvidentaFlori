@@ -1,0 +1,43 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Height="500"
+        Width="800"
+        Background="#FEE7F0"
+
+        WindowState="Maximized"
+        WindowStyle="ThreeDBorderWindow">
+
+    <Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+
+            <Label HorizontalAlignment="Center">
+                <TextBlock FontSize="28" FontWeight="Bold">
+                    <Run Text="Evidenta Flori"/>
+                    <Run Text=" "/>
+                    <Run Foreground="#FFFD6C9E" Text="🌸"/>
+                </TextBlock>
+            </Label>
+
+            <TextBlock Margin="5" Height="17" Width="247">
+                <Run Foreground="#FFFD6C9E" Text="🌸 "/>
+                <Run Text="Nume: Trandafir, Lalea"/>
+            </TextBlock>
+
+            <TextBlock Margin="5">
+                <Run Foreground="#FFFD6C9E" Text="💰 "/>
+                <Run Text="Pret: 15 lei/bucata"/>
+            </TextBlock>
+
+            <TextBlock Margin="5">
+                <Run Foreground="#FFFD6C9E" Text="📦 "/>
+                <Run Text="Stoc: 50 bucati"/>
+            </TextBlock>
+
+        </StackPanel>
+    </Grid>
+
+</Window>
