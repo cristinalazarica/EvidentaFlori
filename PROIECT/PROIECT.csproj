@@ -8,4 +8,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Modele\Modele.csproj" />
+    <ProjectReference Include="..\NivelStocareDate\NivelStocareDate.csproj" />
+  </ItemGroup>
+
 </Project>
