@@ -34,26 +34,25 @@ namespace NivelStocareDate
 
             using (StreamReader sr = new StreamReader(numeFisier))
             {
-                string linieFisier;
-
-                while ((linieFisier = sr.ReadLine()) != null)
+                string? linie;
+                while ((linie = sr.ReadLine()) != null)
                 {
-                    Floare floare = new Floare(linieFisier);
-                    flori.Add(floare);
+                    flori.Add(new Floare(linie));
                 }
             }
 
             return flori;
         }
 
-        public Floare?  CautaDupaNume(string nume)
+        public Floare? CautaDupaNume(string nume)
         {
-            return GetFlori().FirstOrDefault(f => f.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase));
+            return GetFlori()
+                .FirstOrDefault(f => f.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase));
         }
 
         public bool ModificaFloare(string numeCautat, Floare floareNoua)
         {
-            List<Floare> flori = GetFlori();
+            var flori = GetFlori();
             bool gasit = false;
 
             for (int i = 0; i < flori.Count; i++)
@@ -67,17 +66,28 @@ namespace NivelStocareDate
             }
 
             if (gasit)
-            {
-                using (StreamWriter sw = new StreamWriter(numeFisier, false))
-                {
-                    foreach (Floare f in flori)
-                    {
-                        sw.WriteLine(f.ConversieLaSirPentruFisier());
-                    }
-                }
-            }
+                RescrieFisier(flori);
 
             return gasit;
+        }
+
+        // ✅ FIX CERUT (DELETE)
+        public void StergeFloare(string nume)
+        {
+            var flori = GetFlori()
+                .Where(f => !f.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            RescrieFisier(flori);
+        }
+
+        private void RescrieFisier(List<Floare> flori)
+        {
+            using (StreamWriter sw = new StreamWriter(numeFisier, false))
+            {
+                foreach (var f in flori)
+                    sw.WriteLine(f.ConversieLaSirPentruFisier());
+            }
         }
     }
 }
