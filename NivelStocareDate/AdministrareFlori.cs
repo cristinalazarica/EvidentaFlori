@@ -34,10 +34,11 @@ namespace NivelStocareDate
 
             using (StreamReader sr = new StreamReader(numeFisier))
             {
-                string? linie;
-                while ((linie = sr.ReadLine()) != null)
+                string? linieFisier;
+
+                while ((linieFisier = sr.ReadLine()) != null)
                 {
-                    flori.Add(new Floare(linie));
+                    flori.Add(new Floare(linieFisier));
                 }
             }
 
@@ -52,13 +53,14 @@ namespace NivelStocareDate
 
         public bool ModificaFloare(string numeCautat, Floare floareNoua)
         {
-            var flori = GetFlori();
+            List<Floare> flori = GetFlori();
             bool gasit = false;
 
             for (int i = 0; i < flori.Count; i++)
             {
                 if (flori[i].Nume.Equals(numeCautat, StringComparison.OrdinalIgnoreCase))
                 {
+                    floareNoua.DataActualizare = DateTime.Today;
                     flori[i] = floareNoua;
                     gasit = true;
                     break;
@@ -66,15 +68,16 @@ namespace NivelStocareDate
             }
 
             if (gasit)
+            {
                 RescrieFisier(flori);
+            }
 
             return gasit;
         }
 
-        // ✅ FIX CERUT (DELETE)
         public void StergeFloare(string nume)
         {
-            var flori = GetFlori()
+            List<Floare> flori = GetFlori()
                 .Where(f => !f.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
@@ -85,8 +88,10 @@ namespace NivelStocareDate
         {
             using (StreamWriter sw = new StreamWriter(numeFisier, false))
             {
-                foreach (var f in flori)
+                foreach (Floare f in flori)
+                {
                     sw.WriteLine(f.ConversieLaSirPentruFisier());
+                }
             }
         }
     }

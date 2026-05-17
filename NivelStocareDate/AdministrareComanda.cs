@@ -34,7 +34,8 @@ namespace NivelStocareDate
 
             using (StreamReader sr = new StreamReader(numeFisier))
             {
-                string linieFisier;
+                string? linieFisier;
+
                 while ((linieFisier = sr.ReadLine()) != null)
                 {
                     Comanda comanda = new Comanda(linieFisier);
