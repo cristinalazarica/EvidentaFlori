@@ -26,7 +26,6 @@
     </Window.Resources>
 
     <Grid>
-
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
@@ -53,6 +52,7 @@
             <TabControl x:Name="panelAdmin"
                         Margin="20">
 
+                <!-- FLORI -->
                 <TabItem Header="Flori">
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -91,9 +91,11 @@
                                      Height="68"
                                      SelectionMode="Single"
                                      Margin="5">
+
                                 <ListBoxItem Content="Buchet"/>
                                 <ListBoxItem Content="Ghiveci"/>
                                 <ListBoxItem Content="Decoratiune"/>
+
                             </ListBox>
 
                             <Border Background="#FFF8FA"
@@ -161,26 +163,66 @@
 
                 </TabItem>
 
+                <!-- CLIENTI -->
                 <TabItem Header="Clienti">
 
-                    <StackPanel Width="320">
+                    <StackPanel Width="350">
 
-                        <TextBlock Text="Nume"/>
-                        <TextBox x:Name="txtNumeClient"/>
+                        <TextBlock Text="Nume client"/>
 
-                        <TextBlock Text="Nr comenzi"/>
+                        <TextBox x:Name="txtNumeClient"
+                                 Text="{Binding NumePreview, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                        <Label Content="{Binding NumePreview}"
+                               FontSize="16"
+                               Foreground="DarkBlue"
+                               Margin="5" Height="7" RenderTransformOrigin="0.5,0.5">
+                            <Label.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleY="-1"/>
+                                    <SkewTransform/>
+                                    <RotateTransform/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Label.RenderTransform>
+                        </Label>
+
+                        <TextBlock Text="Nr comanda"/>
                         <TextBox x:Name="txtNrComenzi"/>
 
-                        <Button Content="Adauga"
+                        <Button Content="Adauga / Modifica Client"
                                 Click="BtnAdaugaClient_Click"/>
 
+                        <Button Content="Modifica Client Selectat"
+                                Click="BtnEditClient_Click"/>
+
+                        <Button Content="Sterge Client Selectat"
+                                Click="BtnStergeClient_Click"/>
+
+                        <TextBlock Text="Lista clienti"
+                                   FontWeight="Bold"
+                                   Margin="5"/>
+
+                        <ListBox x:Name="lstClienti"
+                                 Height="160"
+                                 Margin="5"
+                                 ItemsSource="{Binding ClientiObservable}"
+                                 DisplayMemberPath="Nume"/>
+
+                        <Label Content="{Binding ElementName=lstClienti, Path=Items.Count}"
+                               FontWeight="Bold"
+                               Margin="5"/>
+
                         <TextBlock x:Name="txtEroareClient"
-                                   Foreground="Red"/>
+                                   Foreground="Red"
+                                   Margin="5"/>
 
                     </StackPanel>
 
                 </TabItem>
 
+                <!-- COMENZI -->
                 <TabItem Header="Comenzi">
 
                     <StackPanel Width="320">
@@ -206,6 +248,7 @@
 
             </TabControl>
 
+            <!-- CAUTARE -->
             <StackPanel x:Name="panelCautare"
                         Visibility="Collapsed"
                         Margin="20">
@@ -259,36 +302,24 @@
                                             Width="*"/>
 
                         <DataGridTemplateColumn Header="Edit">
-
                             <DataGridTemplateColumn.CellTemplate>
-
                                 <DataTemplate>
-
                                     <Button Content="Edit"
                                             Click="BtnEdit_Click"
                                             Tag="{Binding}"/>
-
                                 </DataTemplate>
-
                             </DataGridTemplateColumn.CellTemplate>
-
                         </DataGridTemplateColumn>
 
                         <DataGridTemplateColumn Header="Delete">
-
                             <DataGridTemplateColumn.CellTemplate>
-
                                 <DataTemplate>
-
                                     <Button Content="Delete"
                                             Background="Red"
                                             Click="BtnDelete_Click"
                                             Tag="{Binding}"/>
-
                                 </DataTemplate>
-
                             </DataGridTemplateColumn.CellTemplate>
-
                         </DataGridTemplateColumn>
 
                     </DataGrid.Columns>

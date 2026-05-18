@@ -1,25 +1,55 @@
 ﻿using Modele;
 using NivelStocareDate;
 using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace WpfApp1
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private AdministrareFlori adminFlori = new AdministrareFlori("flori.txt");
         private AdministrareClienti adminClienti = new AdministrareClienti("clienti.txt");
         private AdministrareComenzi adminComenzi = new AdministrareComenzi("comenzi.txt");
 
         private string? floareEdit = null;
+        private string? clientEdit = null;
+
+        public ObservableCollection<Client> ClientiObservable { get; set; }
+
+        private string numePreview = string.Empty;
+
+        public string NumePreview
+        {
+            get => numePreview;
+            set
+            {
+                numePreview = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string? nume = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nume));
+        }
 
         public MainWindow()
         {
             InitializeComponent();
 
+            ClientiObservable = new ObservableCollection<Client>(adminClienti.GetClienti());
+
+            DataContext = this;
+
             dpDataAdaugare.SelectedDate = DateTime.Today;
+
             RefreshGrid();
         }
 
@@ -73,17 +103,13 @@ namespace WpfApp1
             Optiuni opt = Optiuni.Nimic;
 
             if (chkParfumata.IsChecked == true)
-            {
                 opt |= Optiuni.Parfumata;
-            }
 
             if (chkDecorativa.IsChecked == true)
-            {
                 opt |= Optiuni.Decorativa;
-            }
 
             ListBoxItem itemSelectat = (ListBoxItem)lstTipFloare.SelectedItem;
-            string tipFloare = itemSelectat.Content?.ToString() ?? string.Empty;
+            string tipFloare = itemSelectat.Content?.ToString() ?? "Buchet";
 
             DateTime dataAdaugare = dpDataAdaugare.SelectedDate ?? DateTime.Today;
 
@@ -116,16 +142,10 @@ namespace WpfApp1
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
             Button? btn = sender as Button;
-            if (btn == null)
-            {
-                return;
-            }
+            if (btn == null) return;
 
             Floare? floare = btn.Tag as Floare;
-            if (floare == null)
-            {
-                return;
-            }
+            if (floare == null) return;
 
             panelAdmin.Visibility = Visibility.Visible;
             panelCautare.Visibility = Visibility.Collapsed;
@@ -134,7 +154,6 @@ namespace WpfApp1
             txtNume.Text = floare.Nume;
             txtPret.Text = floare.Pret.ToString();
             txtStoc.Text = floare.Stoc.ToString();
-
             cmbCuloare.SelectedIndex = (int)floare.Culoare;
 
             chkParfumata.IsChecked = floare.Optiuni.HasFlag(Optiuni.Parfumata);
@@ -162,16 +181,10 @@ namespace WpfApp1
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
             Button? btn = sender as Button;
-            if (btn == null)
-            {
-                return;
-            }
+            if (btn == null) return;
 
             Floare? floare = btn.Tag as Floare;
-            if (floare == null)
-            {
-                return;
-            }
+            if (floare == null) return;
 
             MessageBoxResult rezultat = MessageBox.Show(
                 "Stergi floarea?",
@@ -219,14 +232,84 @@ namespace WpfApp1
             dpDataAdaugare.SelectedDate = DateTime.Today;
         }
 
+        private void RefreshClienti()
+        {
+            ClientiObservable.Clear();
+
+            foreach (Client client in adminClienti.GetClienti())
+            {
+                ClientiObservable.Add(client);
+            }
+        }
+
         private void BtnAdaugaClient_Click(object sender, RoutedEventArgs e)
         {
-            int.TryParse(txtNrComenzi.Text, out int nrComenzi);
+            if (string.IsNullOrWhiteSpace(txtNumeClient.Text))
+            {
+                txtEroareClient.Text = "Introdu numele clientului!";
+                return;
+            }
+
+            if (!int.TryParse(txtNrComenzi.Text, out int nrComenzi))
+            {
+                txtEroareClient.Text = "Numar comenzi invalid!";
+                return;
+            }
 
             Client client = new Client(txtNumeClient.Text, nrComenzi);
-            adminClienti.AdaugaClient(client);
 
-            txtEroareClient.Text = "Client adaugat!";
+            if (clientEdit != null)
+            {
+                adminClienti.ModificaClient(clientEdit, client);
+                txtEroareClient.Text = "Client modificat!";
+                clientEdit = null;
+            }
+            else
+            {
+                adminClienti.AdaugaClient(client);
+                txtEroareClient.Text = "Client adaugat!";
+            }
+
+            RefreshClienti();
+
+            txtNumeClient.Clear();
+            txtNrComenzi.Clear();
+            NumePreview = string.Empty;
+        }
+
+        private void BtnEditClient_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstClienti.SelectedItem is Client client)
+            {
+                txtNumeClient.Text = client.Nume;
+                txtNrComenzi.Text = client.NrComenzi.ToString();
+
+                NumePreview = client.Nume;
+
+                clientEdit = client.Nume;
+
+                txtEroareClient.Text = "Modifici clientul selectat.";
+            }
+            else
+            {
+                txtEroareClient.Text = "Selecteaza un client!";
+            }
+        }
+
+        private void BtnStergeClient_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstClienti.SelectedItem is Client client)
+            {
+                adminClienti.StergeClient(client.Nume);
+
+                RefreshClienti();
+
+                txtEroareClient.Text = "Client sters!";
+            }
+            else
+            {
+                txtEroareClient.Text = "Selecteaza un client!";
+            }
         }
 
         private void BtnAdaugaComanda_Click(object sender, RoutedEventArgs e)

@@ -34,11 +34,11 @@ namespace NivelStocareDate
 
             using (StreamReader sr = new StreamReader(numeFisier))
             {
-                string linieFisier;
+                string? linieFisier;
+
                 while ((linieFisier = sr.ReadLine()) != null)
                 {
-                    Client client = new Client(linieFisier);
-                    clienti.Add(client);
+                    clienti.Add(new Client(linieFisier));
                 }
             }
 
@@ -47,7 +47,8 @@ namespace NivelStocareDate
 
         public Client? CautaDupaNume(string nume)
         {
-            return GetClienti().FirstOrDefault(c => c.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase));
+            return GetClienti()
+                .FirstOrDefault(c => c.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase));
         }
 
         public bool ModificaClient(string numeCautat, Client clientNou)
@@ -67,16 +68,30 @@ namespace NivelStocareDate
 
             if (gasit)
             {
-                using (StreamWriter sw = new StreamWriter(numeFisier, false))
-                {
-                    foreach (Client c in clienti)
-                    {
-                        sw.WriteLine(c.ConversieLaSirPentruFisier());
-                    }
-                }
+                RescrieFisier(clienti);
             }
 
             return gasit;
+        }
+
+        public void StergeClient(string nume)
+        {
+            List<Client> clienti = GetClienti()
+                .Where(c => !c.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            RescrieFisier(clienti);
+        }
+
+        private void RescrieFisier(List<Client> clienti)
+        {
+            using (StreamWriter sw = new StreamWriter(numeFisier, false))
+            {
+                foreach (Client c in clienti)
+                {
+                    sw.WriteLine(c.ConversieLaSirPentruFisier());
+                }
+            }
         }
     }
 }

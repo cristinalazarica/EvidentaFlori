@@ -20,8 +20,9 @@
         public Client(string linieFisier)
         {
             string[] date = linieFisier.Split(';');
-            Nume = date[0];
-            NrComenzi = int.Parse(date[1]);
+
+            Nume = date.Length > 0 ? date[0] : string.Empty;
+            NrComenzi = date.Length > 1 && int.TryParse(date[1], out int nr) ? nr : 0;
         }
 
         public string ConversieLaSirPentruFisier()
