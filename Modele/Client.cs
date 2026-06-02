@@ -7,7 +7,7 @@
 
         public Client()
         {
-            Nume = string.Empty;
+            Nume = "";
             NrComenzi = 0;
         }
 
@@ -19,9 +19,9 @@
 
         public Client(string linieFisier)
         {
-            string[] date = linieFisier.Split(';');
+            var date = linieFisier.Split(';');
 
-            Nume = date.Length > 0 ? date[0] : string.Empty;
+            Nume = date.Length > 0 ? date[0] : "";
             NrComenzi = date.Length > 1 && int.TryParse(date[1], out int nr) ? nr : 0;
         }
 
@@ -30,9 +30,9 @@
             return $"{Nume};{NrComenzi}";
         }
 
-        public string Info()
+        public override string ToString()
         {
-            return $"Client: {Nume}, NrComenzi: {NrComenzi}";
+            return $"{Nume} ({NrComenzi} comenzi)";
         }
     }
 }

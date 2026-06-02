@@ -16,16 +16,17 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
-
-            dpDataAdaugare.SelectedDate = DateTime.Today;
-
-            RefreshFlori();
-            RefreshClienti();
-            RefreshComenzi();
+            RefreshAll();
         }
 
-        // ================= NAVIGARE =================
+        private void RefreshAll()
+        {
+            lstClienti.ItemsSource = adminClienti.GetClienti();
+            dgComenzi.ItemsSource = adminComenzi.GetComenzi();
+            dgFloriCautare.ItemsSource = adminFlori.GetFlori();
+        }
 
+        // NAVIGARE
         private void BtnAdmin_Click(object sender, RoutedEventArgs e)
         {
             panelAdmin.Visibility = Visibility.Visible;
@@ -36,17 +37,32 @@ namespace WpfApp1
         {
             panelAdmin.Visibility = Visibility.Collapsed;
             panelCautare.Visibility = Visibility.Visible;
+
+            dgFloriCautare.ItemsSource = adminFlori.GetFlori();
         }
 
-        // ================= FLOARE =================
+        // FLOARE
+        private void BtnAdaugaFloare_Click(object sender, RoutedEventArgs e)
+        {
+            var floare = new Floare
+            {
+                Nume = txtNume.Text ?? "",
+                Pret = double.TryParse(txtPret.Text, out double p) ? p : 0,
+                Stoc = int.TryParse(txtStoc.Text, out int s) ? s : 0,
+                Culoare = GetCuloare(),
+                TipFloare = (lstTipFloare.SelectedItem as ListBoxItem)?.Content?.ToString() ?? "",
+                DataAdaugare = DateTime.Now
+            };
+
+            adminFlori.AdaugaFloare(floare);
+            dgFloriCautare.ItemsSource = adminFlori.GetFlori();
+        }
 
         private Culoare GetCuloare()
         {
             if (cmbCuloareFlori.SelectedItem is ComboBoxItem item)
             {
-                string val = item.Content?.ToString() ?? "Rosu";
-
-                return val switch
+                return item.Content.ToString() switch
                 {
                     "Rosu" => Culoare.Rosu,
                     "Alb" => Culoare.Alb,
@@ -55,52 +71,19 @@ namespace WpfApp1
                     _ => Culoare.Rosu
                 };
             }
-
             return Culoare.Rosu;
         }
 
-        private void BtnAdaugaFloare_Click(object sender, RoutedEventArgs e)
-        {
-            var opt = Optiuni.Nimic;
-
-            if (chkParfumata.IsChecked == true)
-                opt |= Optiuni.Parfumata;
-
-            if (chkDecorativa.IsChecked == true)
-                opt |= Optiuni.Decorativa;
-
-            var floare = new Floare
-            {
-                Nume = txtNume.Text ?? "",
-                Pret = double.TryParse(txtPret.Text, out var p) ? p : 0,
-                Stoc = int.TryParse(txtStoc.Text, out var s) ? s : 0,
-                Culoare = GetCuloare(),
-                TipFloare = (lstTipFloare.SelectedItem as ListBoxItem)?.Content?.ToString() ?? "",
-                DataAdaugare = dpDataAdaugare.SelectedDate ?? DateTime.Today,
-                Optiuni = opt
-            };
-
-            adminFlori.AdaugaFloare(floare);
-            RefreshFlori();
-        }
-
-        private void RefreshFlori()
-        {
-            dgFlori.ItemsSource = null;
-            dgFlori.ItemsSource = adminFlori.GetFlori();
-        }
-
-        // ================= CLIENTI =================
-
+        // CLIENTI
         private void BtnAdaugaClient_Click(object sender, RoutedEventArgs e)
         {
-            if (!int.TryParse(txtNrComenzi.Text, out int nr))
-                return;
+            var c = new Client(
+                txtNumeClient.Text ?? "",
+                int.TryParse(txtNrComenzi.Text, out int nr) ? nr : 0
+            );
 
-            var client = new Client(txtNumeClient.Text ?? "", nr);
-
-            adminClienti.AdaugaClient(client);
-            RefreshClienti();
+            adminClienti.AdaugaClient(c);
+            lstClienti.ItemsSource = adminClienti.GetClienti();
         }
 
         private void BtnEditClient_Click(object sender, RoutedEventArgs e)
@@ -117,61 +100,47 @@ namespace WpfApp1
             if (lstClienti.SelectedItem is Client c)
             {
                 adminClienti.StergeClient(c.Nume);
-                RefreshClienti();
+                lstClienti.ItemsSource = adminClienti.GetClienti();
             }
         }
 
-        private void RefreshClienti()
-        {
-            lstClienti.ItemsSource = null;
-            lstClienti.ItemsSource = adminClienti.GetClienti();
-        }
-
-        // ================= COMENZI =================
-
+        // COMENZI
         private void BtnAdaugaComanda_Click(object sender, RoutedEventArgs e)
         {
-            int.TryParse(txtCantitate.Text, out int cant);
-
             var comanda = new Comanda(
                 txtNumeClientComanda.Text ?? "",
                 txtNumeFloareComanda.Text ?? "",
-                cant
+                int.TryParse(txtCantitate.Text, out int c) ? c : 0
             );
 
             adminComenzi.AdaugaComanda(comanda);
-            RefreshComenzi();
-        }
-
-        private void RefreshComenzi()
-        {
-            dgComenzi.ItemsSource = null;
             dgComenzi.ItemsSource = adminComenzi.GetComenzi();
         }
 
-        // ================= CAUTARE =================
-
+        // CAUTARE
         private void BtnCautareAvansata_Click(object sender, RoutedEventArgs e)
         {
             var lista = adminFlori.GetFlori();
 
-            string nume = txtCautareNume.Text ?? "";
-
-            if (!string.IsNullOrWhiteSpace(nume))
-                lista = lista.Where(x => x.Nume.ToLower().Contains(nume.ToLower())).ToList();
+            if (!string.IsNullOrWhiteSpace(txtCautareNume.Text))
+            {
+                lista = lista
+                    .Where(x => x.Nume.ToLower().Contains(txtCautareNume.Text.ToLower()))
+                    .ToList();
+            }
 
             if (double.TryParse(txtCautarePret.Text, out double pret))
+            {
                 lista = lista.Where(x => x.Pret <= pret).ToList();
+            }
 
             if (cmbCuloareCautare.SelectedItem is ComboBoxItem item)
             {
-                string culoare = item.Content?.ToString() ?? "";
+                string culoare = item.Content.ToString();
                 lista = lista.Where(x => x.Culoare.ToString() == culoare).ToList();
             }
 
-            dgFlori.ItemsSource = lista;
+            dgFloriCautare.ItemsSource = lista;
         }
-
-   
     }
 }

@@ -31,34 +31,27 @@ namespace Modele
 
         public Floare() { }
 
-        public Floare(string nume, double pret, int stoc,
-            Culoare culoare, Optiuni optiuni, string tip, DateTime data)
-        {
-            Nume = nume ?? "";
-            Pret = pret;
-            Stoc = stoc;
-            Culoare = culoare;
-            Optiuni = optiuni;
-            TipFloare = tip ?? "";
-            DataAdaugare = data;
-        }
-
         public Floare(string linie)
         {
             var d = linie.Split(';');
 
-            Nume = d[0];
-            Pret = double.Parse(d[1]);
-            Stoc = int.Parse(d[2]);
-            Culoare = (Culoare)int.Parse(d[3]);
-            Optiuni = (Optiuni)int.Parse(d[4]);
-            TipFloare = d[5];
-            DataAdaugare = DateTime.Parse(d[6]);
+            Nume = d.Length > 0 ? d[0] : "";
+            Pret = d.Length > 1 && double.TryParse(d[1], out var p) ? p : 0;
+            Stoc = d.Length > 2 && int.TryParse(d[2], out var s) ? s : 0;
+            Culoare = d.Length > 3 && int.TryParse(d[3], out var c) ? (Culoare)c : Culoare.Rosu;
+            Optiuni = d.Length > 4 && int.TryParse(d[4], out var o) ? (Optiuni)o : Optiuni.Nimic;
+            TipFloare = d.Length > 5 ? d[5] : "";
+            DataAdaugare = d.Length > 6 && DateTime.TryParse(d[6], out var dt) ? dt : DateTime.Today;
         }
 
         public string ToFile()
         {
             return $"{Nume};{Pret};{Stoc};{(int)Culoare};{(int)Optiuni};{TipFloare};{DataAdaugare}";
+        }
+
+        public override string ToString()
+        {
+            return $"{Nume} - {Pret} lei ({Culoare})";
         }
     }
 }

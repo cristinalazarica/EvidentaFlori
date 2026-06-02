@@ -8,8 +8,8 @@
 
         public Comanda()
         {
-            NumeClient = string.Empty;
-            NumeFloare = string.Empty;
+            NumeClient = "";
+            NumeFloare = "";
             Cantitate = 0;
         }
 
@@ -22,10 +22,11 @@
 
         public Comanda(string linieFisier)
         {
-            string[] date = linieFisier.Split(';');
-            NumeClient = date[0];
-            NumeFloare = date[1];
-            Cantitate = int.Parse(date[2]);
+            var date = linieFisier.Split(';');
+
+            NumeClient = date.Length > 0 ? date[0] : "";
+            NumeFloare = date.Length > 1 ? date[1] : "";
+            Cantitate = date.Length > 2 && int.TryParse(date[2], out int c) ? c : 0;
         }
 
         public string ConversieLaSirPentruFisier()
@@ -33,9 +34,9 @@
             return $"{NumeClient};{NumeFloare};{Cantitate}";
         }
 
-        public string Info()
+        public override string ToString()
         {
-            return $"Client: {NumeClient}, Floare: {NumeFloare}, Cantitate: {Cantitate}";
+            return $"{NumeClient} - {NumeFloare} ({Cantitate})";
         }
     }
 }

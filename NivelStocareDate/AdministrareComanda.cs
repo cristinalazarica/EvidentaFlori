@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Modele;
@@ -8,79 +7,27 @@ namespace NivelStocareDate
 {
     public class AdministrareComenzi
     {
-        private string numeFisier;
+        private string file;
 
-        public AdministrareComenzi(string numeFisier)
+        public AdministrareComenzi(string file)
         {
-            this.numeFisier = numeFisier;
+            this.file = file;
 
-            if (!File.Exists(numeFisier))
-            {
-                File.Create(numeFisier).Close();
-            }
+            if (!File.Exists(file))
+                File.Create(file).Close();
         }
 
-        public void AdaugaComanda(Comanda comanda)
+        public void AdaugaComanda(Comanda c)
         {
-            using (StreamWriter sw = new StreamWriter(numeFisier, true))
-            {
-                sw.WriteLine(comanda.ConversieLaSirPentruFisier());
-            }
+            File.AppendAllText(file, c.ConversieLaSirPentruFisier() + "\n");
         }
 
         public List<Comanda> GetComenzi()
         {
-            List<Comanda> comenzi = new List<Comanda>();
-
-            using (StreamReader sr = new StreamReader(numeFisier))
-            {
-                string? linieFisier;
-
-                while ((linieFisier = sr.ReadLine()) != null)
-                {
-                    Comanda comanda = new Comanda(linieFisier);
-                    comenzi.Add(comanda);
-                }
-            }
-
-            return comenzi;
-        }
-
-        public List<Comanda> CautaDupaClient(string numeClient)
-        {
-            return GetComenzi()
-                .Where(c => c.NumeClient.Equals(numeClient, StringComparison.OrdinalIgnoreCase))
+            return File.ReadAllLines(file)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => new Comanda(x))
                 .ToList();
-        }
-
-        public bool ModificaComanda(string numeClient, string numeFloare, Comanda comandaNoua)
-        {
-            List<Comanda> comenzi = GetComenzi();
-            bool gasit = false;
-
-            for (int i = 0; i < comenzi.Count; i++)
-            {
-                if (comenzi[i].NumeClient.Equals(numeClient, StringComparison.OrdinalIgnoreCase) &&
-                    comenzi[i].NumeFloare.Equals(numeFloare, StringComparison.OrdinalIgnoreCase))
-                {
-                    comenzi[i] = comandaNoua;
-                    gasit = true;
-                    break;
-                }
-            }
-
-            if (gasit)
-            {
-                using (StreamWriter sw = new StreamWriter(numeFisier, false))
-                {
-                    foreach (Comanda c in comenzi)
-                    {
-                        sw.WriteLine(c.ConversieLaSirPentruFisier());
-                    }
-                }
-            }
-
-            return gasit;
         }
     }
 }

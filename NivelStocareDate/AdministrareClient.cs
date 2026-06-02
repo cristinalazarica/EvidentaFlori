@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Modele;
@@ -8,90 +7,33 @@ namespace NivelStocareDate
 {
     public class AdministrareClienti
     {
-        private string numeFisier;
+        private string file;
 
-        public AdministrareClienti(string numeFisier)
+        public AdministrareClienti(string file)
         {
-            this.numeFisier = numeFisier;
+            this.file = file;
 
-            if (!File.Exists(numeFisier))
-            {
-                File.Create(numeFisier).Close();
-            }
+            if (!File.Exists(file))
+                File.Create(file).Close();
         }
 
-        public void AdaugaClient(Client client)
+        public void AdaugaClient(Client c)
         {
-            using (StreamWriter sw = new StreamWriter(numeFisier, true))
-            {
-                sw.WriteLine(client.ConversieLaSirPentruFisier());
-            }
+            File.AppendAllText(file, c.ConversieLaSirPentruFisier() + "\n");
         }
 
         public List<Client> GetClienti()
         {
-            List<Client> clienti = new List<Client>();
-
-            using (StreamReader sr = new StreamReader(numeFisier))
-            {
-                string? linieFisier;
-
-                while ((linieFisier = sr.ReadLine()) != null)
-                {
-                    clienti.Add(new Client(linieFisier));
-                }
-            }
-
-            return clienti;
-        }
-
-        public Client? CautaDupaNume(string nume)
-        {
-            return GetClienti()
-                .FirstOrDefault(c => c.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public bool ModificaClient(string numeCautat, Client clientNou)
-        {
-            List<Client> clienti = GetClienti();
-            bool gasit = false;
-
-            for (int i = 0; i < clienti.Count; i++)
-            {
-                if (clienti[i].Nume.Equals(numeCautat, StringComparison.OrdinalIgnoreCase))
-                {
-                    clienti[i] = clientNou;
-                    gasit = true;
-                    break;
-                }
-            }
-
-            if (gasit)
-            {
-                RescrieFisier(clienti);
-            }
-
-            return gasit;
+            return File.ReadAllLines(file)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => new Client(x))
+                .ToList();
         }
 
         public void StergeClient(string nume)
         {
-            List<Client> clienti = GetClienti()
-                .Where(c => !c.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            RescrieFisier(clienti);
-        }
-
-        private void RescrieFisier(List<Client> clienti)
-        {
-            using (StreamWriter sw = new StreamWriter(numeFisier, false))
-            {
-                foreach (Client c in clienti)
-                {
-                    sw.WriteLine(c.ConversieLaSirPentruFisier());
-                }
-            }
+            var lista = GetClienti().Where(c => c.Nume != nume).ToList();
+            File.WriteAllLines(file, lista.Select(c => c.ConversieLaSirPentruFisier()));
         }
     }
 }

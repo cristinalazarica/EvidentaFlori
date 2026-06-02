@@ -4,22 +4,30 @@
         Title="Florărie"
         MinWidth="900"
         MinHeight="600"
-        Background="#F7F7F7">
+        Background="#FFF5F7">
 
     <Window.Resources>
 
         <SolidColorBrush x:Key="Primary" Color="#D86C8A"/>
+        <SolidColorBrush x:Key="PrimaryLight" Color="#F3A6B8"/>
 
         <Style TargetType="Button">
-            <Setter Property="Margin" Value="6"/>
-            <Setter Property="Padding" Value="8"/>
             <Setter Property="Background" Value="{StaticResource Primary}"/>
             <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
         </Style>
 
         <Style TargetType="TextBox">
-            <Setter Property="Margin" Value="6"/>
-            <Setter Property="Padding" Value="6"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Primary}"/>
+        </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="AlternatingRowBackground" Value="#FFF0F3"/>
         </Style>
 
     </Window.Resources>
@@ -47,20 +55,24 @@
         <!-- CONTINUT -->
         <Grid Grid.Column="1">
 
+            <!-- ADMIN -->
             <TabControl x:Name="panelAdmin" Margin="15">
 
                 <!-- FLORI -->
                 <TabItem Header="Flori">
                     <StackPanel Width="350">
-                        <TextBlock Text=" Floare"/>
+
+                        <TextBlock Text="Nume"/>
                         <TextBox x:Name="txtNume"/>
+
                         <TextBlock Text="Pret"/>
                         <TextBox x:Name="txtPret"/>
+
                         <TextBlock Text="Stoc"/>
                         <TextBox x:Name="txtStoc"/>
 
-                        <ComboBox x:Name="cmbCuloareFlori">
-                            <TextBlock Text="Culoare"/>
+                        <TextBlock Text="Culoare"/>
+                        <ComboBox x:Name="cmbCuloareFlori" SelectedIndex="0">
                             <ComboBoxItem Content="Rosu"/>
                             <ComboBoxItem Content="Alb"/>
                             <ComboBoxItem Content="Galben"/>
@@ -73,8 +85,6 @@
                             <ListBoxItem Content="Decoratiune"/>
                         </ListBox>
 
-                        <DatePicker x:Name="dpDataAdaugare"/>
-
                         <CheckBox x:Name="chkParfumata" Content="Parfumata"/>
                         <CheckBox x:Name="chkDecorativa" Content="Decorativa"/>
 
@@ -85,11 +95,13 @@
                 </TabItem>
 
                 <!-- CLIENTI -->
-                <TabItem Header="Clienti" HorizontalAlignment="Right" Margin="0,-2,-2,0" Width="49">
-
+                <TabItem Header="Clienti">
                     <StackPanel Width="320">
 
+                        <TextBlock Text="Nume client"/>
                         <TextBox x:Name="txtNumeClient"/>
+
+                        <TextBlock Text="Numar comenzi"/>
                         <TextBox x:Name="txtNrComenzi"/>
 
                         <Button Content="Adauga Client"
@@ -101,41 +113,50 @@
                         <Button Content="Sterge Client"
                                 Click="BtnStergeClient_Click"/>
 
-                        <ListBox x:Name="lstClienti" Height="200"/>
-
+                        <ListBox x:Name="lstClienti"
+                                 DisplayMemberPath="Nume"
+                                 Height="200"/>
                     </StackPanel>
-
                 </TabItem>
 
                 <!-- COMENZI -->
                 <TabItem Header="Comenzi">
-
                     <StackPanel Width="320">
 
+                        <TextBlock Text="Nume client"/>
                         <TextBox x:Name="txtNumeClientComanda"/>
+
+                        <TextBlock Text="Nume floare"/>
                         <TextBox x:Name="txtNumeFloareComanda"/>
+
+                        <TextBlock Text="Cantitate"/>
                         <TextBox x:Name="txtCantitate"/>
 
                         <Button Content="Adauga Comanda"
                                 Click="BtnAdaugaComanda_Click"/>
 
-                        <DataGrid x:Name="dgComenzi" Height="200"/>
+                        <DataGrid x:Name="dgComenzi"
+                                  Height="200"
+                                  AutoGenerateColumns="True"/>
 
                     </StackPanel>
-
                 </TabItem>
 
             </TabControl>
 
-            <!-- CAUTARE -->
+            <!-- CAUTARE (AICI ESTE AFISAREA FLORILOR) -->
             <StackPanel x:Name="panelCautare"
                         Visibility="Collapsed"
                         Margin="15">
 
-                <TextBox x:Name="txtCautareNume"/>
-                <TextBox x:Name="txtCautarePret"/>
+                <TextBlock Text="Cautare flori"
+                           FontSize="18"
+                           FontWeight="Bold"/>
 
-                <ComboBox x:Name="cmbCuloareCautare">
+                <TextBox x:Name="txtCautareNume" />
+                <TextBox x:Name="txtCautarePret" />
+
+                <ComboBox x:Name="cmbCuloareCautare" SelectedIndex="0">
                     <ComboBoxItem Content="Rosu"/>
                     <ComboBoxItem Content="Alb"/>
                     <ComboBoxItem Content="Galben"/>
@@ -145,7 +166,14 @@
                 <Button Content="Cauta"
                         Click="BtnCautareAvansata_Click"/>
 
-                <DataGrid x:Name="dgFlori" Height="300"/>
+                <!-- 🔥 AFISARE FLORI MUTATA AICI -->
+                <TextBlock Text="Rezultate flori"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Margin="5"/>
+
+                <DataGrid x:Name="dgFloriCautare"
+                          Height="300"/>
 
             </StackPanel>
 
