@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Modele;
@@ -8,91 +7,45 @@ namespace NivelStocareDate
 {
     public class AdministrareFlori
     {
-        private string numeFisier;
+        private string file;
 
-        public AdministrareFlori(string numeFisier)
+        public AdministrareFlori(string file)
         {
-            this.numeFisier = numeFisier;
-
-            if (!File.Exists(numeFisier))
-            {
-                File.Create(numeFisier).Close();
-            }
+            this.file = file;
+            if (!File.Exists(file))
+                File.Create(file).Close();
         }
 
-        public void AdaugaFloare(Floare floare)
+        public void AdaugaFloare(Floare f)
         {
-            using (StreamWriter sw = new StreamWriter(numeFisier, true))
-            {
-                sw.WriteLine(floare.ConversieLaSirPentruFisier());
-            }
+            File.AppendAllText(file, f.ToFile() + "\n");
         }
 
         public List<Floare> GetFlori()
         {
-            List<Floare> flori = new List<Floare>();
-
-            using (StreamReader sr = new StreamReader(numeFisier))
-            {
-                string? linieFisier;
-
-                while ((linieFisier = sr.ReadLine()) != null)
-                {
-                    flori.Add(new Floare(linieFisier));
-                }
-            }
-
-            return flori;
-        }
-
-        public Floare? CautaDupaNume(string nume)
-        {
-            return GetFlori()
-                .FirstOrDefault(f => f.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public bool ModificaFloare(string numeCautat, Floare floareNoua)
-        {
-            List<Floare> flori = GetFlori();
-            bool gasit = false;
-
-            for (int i = 0; i < flori.Count; i++)
-            {
-                if (flori[i].Nume.Equals(numeCautat, StringComparison.OrdinalIgnoreCase))
-                {
-                    floareNoua.DataActualizare = DateTime.Today;
-                    flori[i] = floareNoua;
-                    gasit = true;
-                    break;
-                }
-            }
-
-            if (gasit)
-            {
-                RescrieFisier(flori);
-            }
-
-            return gasit;
+            return File.ReadAllLines(file)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => new Floare(x))
+                .ToList();
         }
 
         public void StergeFloare(string nume)
         {
-            List<Floare> flori = GetFlori()
-                .Where(f => !f.Nume.Equals(nume, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            RescrieFisier(flori);
+            var lista = GetFlori().Where(f => f.Nume != nume).ToList();
+            File.WriteAllLines(file, lista.Select(f => f.ToFile()));
         }
 
-        private void RescrieFisier(List<Floare> flori)
+        public void ModificaFloare(string nume, Floare noua)
         {
-            using (StreamWriter sw = new StreamWriter(numeFisier, false))
+            var lista = GetFlori();
+
+            for (int i = 0; i < lista.Count; i++)
             {
-                foreach (Floare f in flori)
-                {
-                    sw.WriteLine(f.ConversieLaSirPentruFisier());
-                }
+                if (lista[i].Nume == nume)
+                    lista[i] = noua;
             }
+
+            File.WriteAllLines(file, lista.Select(f => f.ToFile()));
         }
     }
 }

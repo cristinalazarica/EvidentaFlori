@@ -21,92 +21,44 @@ namespace Modele
 
     public class Floare
     {
-        public string Nume { get; set; }
+        public string Nume { get; set; } = "";
         public double Pret { get; set; }
         public int Stoc { get; set; }
         public Culoare Culoare { get; set; }
         public Optiuni Optiuni { get; set; }
-        public string TipFloare { get; set; }
+        public string TipFloare { get; set; } = "";
         public DateTime DataAdaugare { get; set; }
-        public DateTime DataActualizare { get; set; }
 
-        public Floare()
-        {
-            Nume = string.Empty;
-            Pret = 0;
-            Stoc = 0;
-            Culoare = Culoare.Alb;
-            Optiuni = Optiuni.Nimic;
-            TipFloare = "Buchet";
-            DataAdaugare = DateTime.Today;
-            DataActualizare = DateTime.Today;
-        }
+        public Floare() { }
 
-        public Floare(string nume, double pret, int stoc, Culoare culoare, Optiuni optiuni)
+        public Floare(string nume, double pret, int stoc,
+            Culoare culoare, Optiuni optiuni, string tip, DateTime data)
         {
-            Nume = nume;
+            Nume = nume ?? "";
             Pret = pret;
             Stoc = stoc;
             Culoare = culoare;
             Optiuni = optiuni;
-            TipFloare = "Buchet";
-            DataAdaugare = DateTime.Today;
-            DataActualizare = DateTime.Today;
+            TipFloare = tip ?? "";
+            DataAdaugare = data;
         }
 
-        public Floare(string nume, double pret, int stoc, Culoare culoare, Optiuni optiuni, string tipFloare, DateTime dataAdaugare)
+        public Floare(string linie)
         {
-            Nume = nume;
-            Pret = pret;
-            Stoc = stoc;
-            Culoare = culoare;
-            Optiuni = optiuni;
-            TipFloare = tipFloare;
-            DataAdaugare = dataAdaugare;
-            DataActualizare = DateTime.Today;
+            var d = linie.Split(';');
+
+            Nume = d[0];
+            Pret = double.Parse(d[1]);
+            Stoc = int.Parse(d[2]);
+            Culoare = (Culoare)int.Parse(d[3]);
+            Optiuni = (Optiuni)int.Parse(d[4]);
+            TipFloare = d[5];
+            DataAdaugare = DateTime.Parse(d[6]);
         }
 
-        public Floare(string linieFisier)
+        public string ToFile()
         {
-            string[] date = linieFisier.Split(';');
-
-            Nume = date.Length > 0 ? date[0] : string.Empty;
-
-            Pret = date.Length > 1 && double.TryParse(date[1], out double pret)
-                ? pret
-                : 0;
-
-            Stoc = date.Length > 2 && int.TryParse(date[2], out int stoc)
-                ? stoc
-                : 0;
-
-            Culoare = date.Length > 3 && int.TryParse(date[3], out int culoare)
-                ? (Culoare)culoare
-                : Culoare.Alb;
-
-            Optiuni = date.Length > 4 && int.TryParse(date[4], out int optiuni)
-                ? (Optiuni)optiuni
-                : Optiuni.Nimic;
-
-            TipFloare = date.Length > 5 ? date[5] : "Buchet";
-
-            DataAdaugare = date.Length > 6 && DateTime.TryParse(date[6], out DateTime dataAdaugare)
-                ? dataAdaugare
-                : DateTime.Today;
-
-            DataActualizare = date.Length > 7 && DateTime.TryParse(date[7], out DateTime dataActualizare)
-                ? dataActualizare
-                : DateTime.Today;
-        }
-
-        public string ConversieLaSirPentruFisier()
-        {
-            return $"{Nume};{Pret};{Stoc};{(int)Culoare};{(int)Optiuni};{TipFloare};{DataAdaugare};{DataActualizare}";
-        }
-
-        public string Info()
-        {
-            return $"Floare: {Nume}, Pret: {Pret}, Stoc: {Stoc}, Culoare: {Culoare}, Optiuni: {Optiuni}, Tip: {TipFloare}, Data: {DataAdaugare}";
+            return $"{Nume};{Pret};{Stoc};{(int)Culoare};{(int)Optiuni};{TipFloare};{DataAdaugare}";
         }
     }
 }
